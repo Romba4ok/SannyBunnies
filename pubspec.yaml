@@ -1,0 +1,79 @@
+name: sannybunnies
+description: "A new Flutter project."
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.10.0-290.4.beta
+
+dependencies:
+  flutter:
+    sdk: flutter
+  shared_preferences: ^2.0.15
+  cupertino_icons: ^1.0.8
+  image_picker: ^1.0.0
+  path_provider:
+  sqflite:
+  url_launcher: ^6.1.10
+  # Firebase
+  cloud_firestore: ^6.3.0
+  firebase_storage: ^13.3.0
+  firebase_core: ^4.7.0
+  firebase_auth: ^6.4.0
+  google_sign_in: ^6.2.1
+  flutter_svg: ^2.1.1
+  firebase_messaging: ^16.2.0
+  flutter_local_notifications:
+  permission_handler: ^11.3.1
+  video_player: ^2.8.2
+  intl:
+  flutter_staggered_grid_view:
+
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^6.0.0
+  flutter_native_splash:
+  flutter_launcher_icons: ^0.14.4
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/loadPage/
+    - assets/images/prevPage/
+    - assets/images/nativeSplash/
+    - assets/images/authChoicePage/
+    - assets/images/loginPage/
+    - assets/images/app/
+    - assets/images/dashboard_user/
+    - assets/images/dashboard_teacher/
+    - assets/images/profile/
+    - assets/images/faq/
+    - assets/images/groups/
+    - assets/images/groups/
+    - assets/images/home/
+    - assets/images/home_teacher/
+
+  # Подключение шрифта Inter — используем имеющийся variable font в папке assets/fonts/Inter/
+  fonts:
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/Inter/Inter-VariableFont_opsz,wght.ttf
+        - asset: assets/fonts/Inter/Inter-Italic-VariableFont_opsz,wght.ttf
+
+flutter_native_splash:
+  color: "#090707"
+  image: "assets/images/nativeSplash/sunny.png"
+
+  android_12:
+    color: "#090707"
+    image: "assets/images/nativeSplash/sunny.png"
+
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: assets/images/app/icon_app.png

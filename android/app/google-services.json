@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "1057663994055",
+    "project_id": "sunnybunnies",
+    "storage_bucket": "sunnybunnies.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1057663994055:android:f8aeb208ffd165792b56e2",
+        "android_client_info": {
+          "package_name": "com.example.sannybunnies"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1057663994055-p3bui30nhgvsnabiev7hcdcveeqnh730.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.sannybunnies",
+            "certificate_hash": "7c61e700f7b1c0b9c261de96652b5107eb0c6bef"
+          }
+        },
+        {
+          "client_id": "1057663994055-c86lr5rkajrcllib4eusb2ladovae9en.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyABeXkA1o4ffUuRDJf4agXHRkWU6jaxHDs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1057663994055-c86lr5rkajrcllib4eusb2ladovae9en.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
