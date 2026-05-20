@@ -231,10 +231,18 @@ class _GroupsPageState extends State<GroupsPage> {
             return const LoadPage();
           }
           final groups = snapshot.data ?? [];
+          final sortedGroups = List<Map<String, dynamic>>.from(groups);
+          sortedGroups.sort((a, b) {
+            final ageA = int.tryParse(a['age_from']?.toString() ?? '') ?? 0;
+            final ageB = int.tryParse(b['age_from']?.toString() ?? '') ?? 0;
+            if (ageA != ageB) return ageA.compareTo(ageB);
+            return (a['name']?.toString() ?? '')
+                .compareTo(b['name']?.toString() ?? '');
+          });
 
           return ListView.builder(
             padding: const EdgeInsets.symmetric(horizontal: 20),
-            itemCount: groups.length + 2, 
+            itemCount: sortedGroups.length + 2,
             itemBuilder: (context, index) {
               if (index == 0) {
                 return const Padding(
@@ -252,9 +260,9 @@ class _GroupsPageState extends State<GroupsPage> {
                 );
               }
               if (index == 1) {
-                return _buildTopVisual(groups);
+                return _buildTopVisual(sortedGroups);
               }
-              final group = groups[index - 2];
+              final group = sortedGroups[index - 2];
               return _buildGroupCard(group);
             },
           );

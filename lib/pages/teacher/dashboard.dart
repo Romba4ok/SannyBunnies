@@ -30,7 +30,7 @@ class _TeacherDashboardPageState extends State<TeacherDashboardPage> {
       backgroundColor: const Color(0xFF090707),
       body: Row(
         children: [
-          // Side Navigation Bar
+          
           Container(
             width: 85,
             decoration: const BoxDecoration(
@@ -41,7 +41,7 @@ class _TeacherDashboardPageState extends State<TeacherDashboardPage> {
             child: Column(
               children: [
                 const SizedBox(height: 80),
-                // Bunny Logo
+                
                 Image.asset(
                   'assets/images/dashboard_teacher/sunny.png',
                   height: 44,
@@ -53,7 +53,7 @@ class _TeacherDashboardPageState extends State<TeacherDashboardPage> {
                   ),
                 ),
                 const SizedBox(height: 60),
-                // Nav Items
+                
                 _buildNavItem(
                   0,
                   'assets/images/dashboard_teacher/home.svg',
@@ -82,7 +82,7 @@ class _TeacherDashboardPageState extends State<TeacherDashboardPage> {
               ],
             ),
           ),
-          // Content Area
+          
           Expanded(child: _pages[_selectedIndex]),
         ],
       ),

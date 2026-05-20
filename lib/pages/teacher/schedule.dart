@@ -180,7 +180,7 @@ class _TeacherSchedulePageState extends State<TeacherSchedulePage> {
     final now = DateTime.now();
     final firstDayOfWeek = now.subtract(Duration(days: now.weekday - 1));
 
-    // Контроллер для управления скроллом с помощью стрелочек
+    
     final ScrollController scrollController = ScrollController();
 
     return Container(
@@ -197,7 +197,7 @@ class _TeacherSchedulePageState extends State<TeacherSchedulePage> {
       ),
       child: Row(
         children: [
-          // Левая стрелочка
+          
           GestureDetector(
             onTap: () {
               scrollController.animateTo(
@@ -216,10 +216,10 @@ class _TeacherSchedulePageState extends State<TeacherSchedulePage> {
             ),
           ),
 
-          // Центральная часть с днями недели
+          
           Expanded(
             child: ListView.builder(
-              controller: scrollController, // Привязываем контроллер
+              controller: scrollController, 
               scrollDirection: Axis.horizontal,
               physics: const BouncingScrollPhysics(),
               padding: const EdgeInsets.symmetric(horizontal: 4),
@@ -234,7 +234,7 @@ class _TeacherSchedulePageState extends State<TeacherSchedulePage> {
             ),
           ),
 
-          // Правая стрелочка
+          
           GestureDetector(
             onTap: () {
               scrollController.animateTo(

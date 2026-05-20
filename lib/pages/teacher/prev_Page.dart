@@ -9,7 +9,7 @@ class TeacherPrevPage extends StatefulWidget {
 }
 
 class _TeacherPrevPageState extends State<TeacherPrevPage> {
-  // Переменные для управления состоянием слайдера
+  
   double _dragPosition = 0.0;
   bool _isTriggered = false;
 
@@ -17,7 +17,7 @@ class _TeacherPrevPageState extends State<TeacherPrevPage> {
   Widget build(BuildContext context) {
     const double buttonHeight = 80.0;
     const double innerCircleSize = 64.0;
-    const double paddingOffset = 8.0; // Отступ кружков от краев контейнера
+    const double paddingOffset = 8.0; 
 
     return Scaffold(
       backgroundColor: const Color(0xFF090707),
@@ -25,7 +25,7 @@ class _TeacherPrevPageState extends State<TeacherPrevPage> {
         child: Column(
           children: [
             const Spacer(flex: 2),
-            // Иллюстрация
+            
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 40),
               child: Image.asset(
@@ -40,7 +40,7 @@ class _TeacherPrevPageState extends State<TeacherPrevPage> {
               ),
             ),
             const SizedBox(height: 30),
-            // Заголовок
+            
             const Text(
               'Откройте мир знаний',
               textAlign: TextAlign.center,
@@ -51,7 +51,7 @@ class _TeacherPrevPageState extends State<TeacherPrevPage> {
               ),
             ),
             const SizedBox(height: 12),
-            // Тег / Плашка
+            
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
               decoration: BoxDecoration(
@@ -68,7 +68,7 @@ class _TeacherPrevPageState extends State<TeacherPrevPage> {
               ),
             ),
             const SizedBox(height: 30),
-            // Инфо-строка
+            
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -82,12 +82,12 @@ class _TeacherPrevPageState extends State<TeacherPrevPage> {
             ),
             const Spacer(flex: 3),
 
-            // Новая интерактивная панель действий (Slide to Confirm)
+            
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
               child: LayoutBuilder(
                 builder: (context, constraints) {
-                  // Вычисляем максимальный путь движения ползунка
+                  
                   final double maxDragDistance = constraints.maxWidth - innerCircleSize - (paddingOffset * 2);
 
                   return Container(
@@ -99,7 +99,7 @@ class _TeacherPrevPageState extends State<TeacherPrevPage> {
                     ),
                     child: Stack(
                       children: [
-                        // 1. Центральный текст (эффект размытия/пропадания при наведении можно опустить для читаемости)
+                        
                         const Positioned.fill(
                           child: Center(
                             child: Text(
@@ -113,7 +113,7 @@ class _TeacherPrevPageState extends State<TeacherPrevPage> {
                           ),
                         ),
 
-                        // 2. Статичная правая кнопка (стрелочка вниз)
+                        
                         Positioned(
                           right: paddingOffset,
                           top: (buttonHeight - innerCircleSize) / 2,
@@ -132,7 +132,7 @@ class _TeacherPrevPageState extends State<TeacherPrevPage> {
                           ),
                         ),
 
-                        // 3. Передвижной фиолетовый кружок
+                        
                         Positioned(
                           left: paddingOffset + _dragPosition,
                           top: (buttonHeight - innerCircleSize) / 2,
@@ -141,30 +141,30 @@ class _TeacherPrevPageState extends State<TeacherPrevPage> {
                               if (_isTriggered) return;
                               setState(() {
                                 _dragPosition += details.delta.dx;
-                                // Барьер: ползунок не выходит за рамки трека
+                                
                                 _dragPosition = _dragPosition.clamp(0.0, maxDragDistance);
                               });
                             },
                             onHorizontalDragEnd: (details) async {
                               if (_isTriggered) return;
 
-                              // Если довели ползунок практически до конца (на 95% и более)
+                              
                               if (_dragPosition >= maxDragDistance * 0.95) {
                                 _isTriggered = true;
                                 setState(() {
-                                  _dragPosition = maxDragDistance; // Дожимаем до упора вправо
+                                  _dragPosition = maxDragDistance; 
                                 });
 
-                                // Выполняем переход на следующую страницу
+                                
                                 Navigator.of(context).pushReplacement(
                                   MaterialPageRoute(builder: (_) => const TeacherDashboardPage()),
                                 );
                               } else {
-                                // Эффект пружины: если не довели, плавно возвращаем обратно на старт
+                                
                                 while (_dragPosition > 0) {
                                   await Future.delayed(const Duration(milliseconds: 1));
                                   setState(() {
-                                    _dragPosition -= 5; // Скорость отскока
+                                    _dragPosition -= 5; 
                                     if (_dragPosition < 0) _dragPosition = 0;
                                   });
                                 }

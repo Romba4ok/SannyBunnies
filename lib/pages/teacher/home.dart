@@ -24,7 +24,7 @@ class TeacherHomePage extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // Illustration from the screenshot
+                  
                   Image.asset(
                     'assets/images/home_teacher/container.png',
                     height: MediaQuery.of(context).size.height * 0.4,
@@ -37,7 +37,7 @@ class TeacherHomePage extends StatelessWidget {
                   ),
                   const SizedBox(height: 40),
 
-                  // "Добро пожаловать!" text
+                  
                   const Text(
                     'Добро пожаловать!',
                     style: TextStyle(
@@ -48,7 +48,7 @@ class TeacherHomePage extends StatelessWidget {
                   ),
                   const SizedBox(height: 12),
 
-                  // Teacher Name (FIO)
+                  
                   Text(
                     name,
                     textAlign: TextAlign.center,
@@ -60,7 +60,7 @@ class TeacherHomePage extends StatelessWidget {
                   ),
                   const SizedBox(height: 20),
 
-                  // Footer lines in purple/lavender color
+                  
                   const Text(
                     'В личный кабинет детского сада',
                     style: TextStyle(

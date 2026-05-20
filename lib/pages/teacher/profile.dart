@@ -8,6 +8,8 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:sannybunnies/pages/load_page.dart';
 import 'package:sannybunnies/services/auth_wrapper.dart';
 import 'package:sannybunnies/services/login_service.dart';
+import 'package:sannybunnies/services/notification_topic_service.dart';
+import 'package:sannybunnies/services/user/groups_service.dart';
 import 'package:sannybunnies/services/teacher/profile_service_teacher.dart';
 
 class TeacherProfilePage extends StatefulWidget {
@@ -514,6 +516,19 @@ class _TeacherProfilePageState extends State<TeacherProfilePage> {
         currentUser.uid,
         {'notificationsEnabled': value},
       );
+
+      if (value) {
+        final groupIds = await GroupsService.instance.fetchTeacherGroupIds(
+          currentUser.uid,
+        );
+        await NotificationTopicService.instance.updateSubscriptions(
+          uid: currentUser.uid,
+          role: 'teacher',
+          groupIds: groupIds,
+        );
+      } else {
+        await NotificationTopicService.instance.clearSubscriptions();
+      }
     } catch (e) {
       if (mounted)
         ScaffoldMessenger.of(

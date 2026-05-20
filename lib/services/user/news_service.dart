@@ -18,11 +18,39 @@ class NewsService {
   Stream<List<Map<String, dynamic>>> newsStream() async* {
     final cachedNews = await loadCachedNews();
     if (cachedNews.isNotEmpty) {
+      cachedNews.sort((a, b) {
+        DateTime? toDateTime(dynamic value) {
+          if (value == null) return null;
+          if (value is DateTime) return value;
+          if (value is int) return DateTime.fromMillisecondsSinceEpoch(value);
+          if (value is String) return DateTime.tryParse(value);
+          if (value.runtimeType.toString().contains('Timestamp')) {
+            try {
+              return (value as dynamic).toDate() as DateTime;
+            } catch (_) {
+              return null;
+            }
+          }
+          return null;
+        }
+
+        final createdA = toDateTime(a['createdAt']);
+        final createdB = toDateTime(b['createdAt']);
+        if (createdA != null && createdB != null) {
+          return createdB.compareTo(createdA);
+        }
+        if (createdA != null) return -1;
+        if (createdB != null) return 1;
+        return (b['headline']?.toString() ?? '')
+            .compareTo(a['headline']?.toString() ?? '');
+      });
       yield cachedNews;
     }
 
     yield* _firestore
         .collection('news')
+        .orderBy('createdAt', descending: true)
+        .limit(20)
         .snapshots()
         .asyncMap((snapshot) async {
       final news = snapshot.docs.map((doc) {
@@ -30,10 +58,34 @@ class NewsService {
         data['id'] = doc.id;
         return data;
       }).toList();
+      news.sort((a, b) {
+        DateTime? toDateTime(dynamic value) {
+          if (value == null) return null;
+          if (value is DateTime) return value;
+          if (value is int) return DateTime.fromMillisecondsSinceEpoch(value);
+          if (value is String) return DateTime.tryParse(value);
+          if (value.runtimeType.toString().contains('Timestamp')) {
+            try {
+              return (value as dynamic).toDate() as DateTime;
+            } catch (_) {
+              return null;
+            }
+          }
+          return null;
+        }
+
+        final createdA = toDateTime(a['createdAt']);
+        final createdB = toDateTime(b['createdAt']);
+        if (createdA != null && createdB != null) {
+          return createdB.compareTo(createdA);
+        }
+        if (createdA != null) return -1;
+        if (createdB != null) return 1;
+        return (b['headline']?.toString() ?? '')
+            .compareTo(a['headline']?.toString() ?? '');
+      });
       await cacheNews(news);
       return news;
     });
   }
 }
-
-

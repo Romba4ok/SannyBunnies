@@ -7,7 +7,7 @@ class DatabaseService {
   DatabaseService._internal();
   static final DatabaseService instance = DatabaseService._internal();
 
-  // Collection/document cache
+  
   Future<void> cacheCollection(String collectionName, List<Map<String, dynamic>> items) async {
     return await DatabaseHelper().cacheCollection(collectionName, items);
   }
@@ -36,7 +36,7 @@ class DatabaseService {
     return await DatabaseHelper().clearAllFirestoreCache();
   }
 
-  // Image cache
+  
   Future<List<int>?> getCachedImage(String url) async {
     return await DatabaseHelper().getCachedImage(url);
   }

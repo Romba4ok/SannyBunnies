@@ -19,13 +19,13 @@ class _TeacherGroupsPageState extends State<TeacherGroupsPage> {
   final Set<String> _teacherNamesLoading = {};
   final Set<String> _parentInfoLoading = {};
 
-  // 1. Сохраняем ссылку на стрим, чтобы он не перезапускался
+  
   late Stream<List<Map<String, dynamic>>> _groupsStream;
 
   @override
   void initState() {
     super.initState();
-    // Инициализируем стрим один раз при создании виджета
+    
     _groupsStream = TeacherGroupsService.instance.groupsStream();
   }
 
@@ -43,7 +43,7 @@ class _TeacherGroupsPageState extends State<TeacherGroupsPage> {
     return Scaffold(
       backgroundColor: const Color(0xFF090707),
       body: StreamBuilder<List<Map<String, dynamic>>>(
-        stream: _groupsStream, // Используем сохраненный стрим
+        stream: _groupsStream, 
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting && !snapshot.hasData) {
             return const LoadPage();
@@ -158,8 +158,8 @@ class _TeacherGroupsPageState extends State<TeacherGroupsPage> {
 
   Widget _buildGroupContent(List<String> childrenIds) {
     return StreamBuilder<List<Map<String, dynamic>>>(
-      // Здесь также можно оптимизировать, но так как этот виджет создается динамически,
-      // главное — чтобы верхний стрим групп не перезапускался.
+      
+      
       stream: TeacherGroupsService.instance.childrenByIdsStream(childrenIds),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting && !snapshot.hasData) {
@@ -253,7 +253,7 @@ class _TeacherGroupsPageState extends State<TeacherGroupsPage> {
               builder: (context) {
                 if (!_parentCache.containsKey(parentUid)) {
                   _ensureParentInfoLoaded(parentUid);
-                  // Заменили на аккуратный плейсхолдер вместо большого лоадера
+                  
                   return const SizedBox(
                       height: 50,
                       child: Center(child: SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Color(0xFFA441DC))))
@@ -373,7 +373,7 @@ class _TeacherGroupsPageState extends State<TeacherGroupsPage> {
       }
     }
 
-    if (!mounted) return; // Проверка перед setState
+    if (!mounted) return; 
     setState(() {
       _teacherNames[groupId] = 'Воспитатель: ${names.join(', ')}';
     });
@@ -393,7 +393,7 @@ class _TeacherGroupsPageState extends State<TeacherGroupsPage> {
     if (parentUid.isEmpty) return;
 
     final profile = await ProfileServiceTeacher.instance.getParentInfo(parentUid);
-    if (!mounted) return; // Проверка перед setState
+    if (!mounted) return; 
 
     setState(() {
       _parentCache[parentUid] = profile;

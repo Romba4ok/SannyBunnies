@@ -82,6 +82,33 @@ class _NewsPageState extends State<NewsPage> {
             return const LoadPage();
           }
           final newsList = snapshot.data ?? [];
+          final sortedNews = List<Map<String, dynamic>>.from(newsList);
+          sortedNews.sort((a, b) {
+            DateTime? toDateTime(dynamic value) {
+              if (value == null) return null;
+              if (value is DateTime) return value;
+              if (value is int) return DateTime.fromMillisecondsSinceEpoch(value);
+              if (value is String) return DateTime.tryParse(value);
+              if (value.runtimeType.toString().contains('Timestamp')) {
+                try {
+                  return (value as dynamic).toDate() as DateTime;
+                } catch (_) {
+                  return null;
+                }
+              }
+              return null;
+            }
+
+            final createdA = toDateTime(a['createdAt']);
+            final createdB = toDateTime(b['createdAt']);
+            if (createdA != null && createdB != null) {
+              return createdB.compareTo(createdA);
+            }
+            if (createdA != null) return -1;
+            if (createdB != null) return 1;
+            return (b['headline']?.toString() ?? '')
+                .compareTo(a['headline']?.toString() ?? '');
+          });
 
           return CustomScrollView(
             slivers: [
@@ -109,9 +136,9 @@ class _NewsPageState extends State<NewsPage> {
                   ),
                   delegate: SliverChildBuilderDelegate(
                     (context, index) {
-                      return _buildNewsCard(newsList[index]);
+                      return _buildNewsCard(sortedNews[index]);
                     },
-                    childCount: newsList.length,
+                    childCount: sortedNews.length,
                   ),
                 ),
               ),

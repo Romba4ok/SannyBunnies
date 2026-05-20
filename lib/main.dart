@@ -9,19 +9,19 @@ import 'package:intl/date_symbol_data_local.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
-  
+
   await initializeDateFormatting('ru', null);
 
-  
   try {
     await Firebase.initializeApp();
-    print('Firebase initialized');
+    print('[main] Firebase инициализирован');
+
+    await NotificationService.instance.init();
+    print('[main] NotificationService инициализирован');
   } catch (e, st) {
-    print('Firebase init failed: $e\n$st');
+    print('[main] ✗ Ошибка инициализации Firebase: $e\n$st');
   }
-  
-  
+
   FlutterError.onError = (details) {
     FlutterError.dumpErrorToConsole(details);
     print('FlutterError.onError: ${details.exception}\n${details.stack}');
@@ -30,7 +30,7 @@ void main() async {
     print('PlatformDispatcher.onError: $error\n$stack');
     return true;
   };
-  
+
   final prefs = await SharedPreferences.getInstance();
   final seen = prefs.getBool('seen_preview') ?? false;
   runApp(MyApp(seenPreview: seen));
@@ -49,9 +49,7 @@ class MyApp extends StatelessWidget {
         visualDensity: VisualDensity.adaptivePlatformDensity,
         scaffoldBackgroundColor: const Color(0xFF131010),
         appBarTheme: const AppBarTheme(
-          iconTheme: IconThemeData(
-            color: Colors.white,
-          ),
+          iconTheme: IconThemeData(color: Colors.white),
         ),
       ),
       home: AuthWrapper(seenPreview: seenPreview),
@@ -59,4 +57,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-

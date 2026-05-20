@@ -19,7 +19,7 @@ class MenuPage extends StatefulWidget {
 }
 
 class _MenuPageState extends State<MenuPage> {
-  // Константы для градиентов и цветов рамок, чтобы не выделять их при каждом билде
+  
   static const List<List<Color>> _cardGradients = [
     [Color(0xFF00C566), Color(0xFF1A332C)],
     [Color(0xFFFF5B8D), Color(0xFF331A21)],
@@ -92,20 +92,20 @@ class _MenuPageState extends State<MenuPage> {
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
 
-                  // 1. Получаем список и сортируем его (например, по имени или по какому-то полю)
+                  
                   final groups = snapshot.data!;
                   if (groups.isEmpty) return const SizedBox();
 
-                  // Сортировка гарантирует, что первая группа всегда будет одной и той же
+                  
                   groups.sort((a, b) => (a['name'] ?? '').compareTo(b['name'] ?? ''));
 
-                  // 2. Устанавливаем начальное значение только ЕСЛИ оно еще не выбрано
-                  // ИЛИ если выбранный ID перестал существовать в списке
+                  
+                  
                   if (_selectedGroupId == null) {
                     final firstId = groups.first['id'];
                     _selectedGroupId = firstId;
 
-                    // Используем отложенный вызов, чтобы не мешать отрисовке
+                    
                     Future.microtask(() {
                       if (mounted) setState(() {});
                     });
@@ -117,7 +117,7 @@ class _MenuPageState extends State<MenuPage> {
                       Expanded(
                         child: Container(
                           width: double.infinity,
-                          color: const Color(0xFF562C70), // Темно-фиолетовый фон контента
+                          color: const Color(0xFF562C70), 
                           child: _selectedGroupId == null
                               ? const SizedBox()
                               : _buildMenuGrid(_selectedGroupId!),
@@ -138,7 +138,7 @@ class _MenuPageState extends State<MenuPage> {
     return Container(
       width: double.infinity,
       decoration: const BoxDecoration(
-        color: Color(0xFFA442DC), // Светло-фиолетовый фон всей панели
+        color: Color(0xFFA442DC), 
         borderRadius: BorderRadius.vertical(top: Radius.circular(50)),
       ),
       child: Row(
@@ -150,19 +150,19 @@ class _MenuPageState extends State<MenuPage> {
             child: GestureDetector(
               onTap: () => setState(() => _selectedGroupId = group['id']),
               child: Container(
-                // Внешний контейнер всегда прозрачный
+                
                 color: Colors.transparent,
-                padding: const EdgeInsets.fromLTRB(5, 15, 5, 0), // Отступ сверху/снизу
+                padding: const EdgeInsets.fromLTRB(5, 15, 5, 0), 
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 300),
-                  // Регулируем ширину «ячейки» через отступы
+                  
                   margin: const EdgeInsets.symmetric(horizontal: 8),
                   padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 10),
                   decoration: BoxDecoration(
                     color: isSelected ? const Color(0xFF562C70) : Colors.transparent,
 
-                    // Если нужно закругление как на фото (только сверху и сильно),
-                    // используйте:
+                    
+                    
                     borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
                   ),
                   child: Text(
@@ -224,11 +224,11 @@ class _MenuPageState extends State<MenuPage> {
         alignment: Alignment.topCenter,
         clipBehavior: Clip.none,
         children: [
-          // ОСНОВНАЯ КАРТОЧКА
+          
           Container(
             width: double.infinity,
             constraints: const BoxConstraints(minHeight: 250),
-            // Увеличили верхний отступ (100), чтобы текст не налезал на тарелку
+            
             padding: const EdgeInsets.fromLTRB(12, 110, 12, 20),
             decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -244,21 +244,21 @@ class _MenuPageState extends State<MenuPage> {
               ),
             ),
             child: Column(
-              // Убираем mainAxisAlignment.end, так как Spacer сам распределит место
+              
               children: [
                 Text(
                   item['meal'] ?? item['title'] ?? '',
                   textAlign: TextAlign.center,
-                  maxLines: 2, // МАКСИМУМ 2 СТРОКИ
-                  overflow: TextOverflow.ellipsis, // ТРИ ТОЧКИ В КОНЦЕ
+                  maxLines: 2, 
+                  overflow: TextOverflow.ellipsis, 
                   style: const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.w800,
-                    fontSize: 22, // Чуть уменьшил, чтобы 2 строки ложились лучше
+                    fontSize: 22, 
                     height: 1.1,
                   ),
                 ),
-                const Spacer(), // ЗАПОЛНЯЕТ ВСЁ СВОБОДНОЕ МЕСТО, ПРИЖИМАЯ ККАЛ ВНИЗ
+                const Spacer(), 
                 Text(
                   '${item['kcal'] ?? '0'} ккал',
                   style: const TextStyle(
@@ -271,7 +271,7 @@ class _MenuPageState extends State<MenuPage> {
             ),
           ),
 
-          // ФОТО ТАРЕЛКИ
+          
           Positioned(
             top: -30,
             child: Container(

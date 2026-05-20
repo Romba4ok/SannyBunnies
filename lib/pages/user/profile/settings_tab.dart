@@ -1,6 +1,7 @@
 ﻿import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:sannybunnies/services/notification_topic_service.dart';
 import 'package:sannybunnies/services/user/profile_service.dart';
 
 class SettingsTab extends StatelessWidget {
@@ -69,10 +70,9 @@ class SettingsTab extends StatelessWidget {
                   : () async {
                       setDialogState(() => isLoading = true);
                       try {
-                        await ProfileService.instance.updateUserProfile(
-                          uid,
-                          {'name': nameController.text.trim()},
-                        );
+                        await ProfileService.instance.updateUserProfile(uid, {
+                          'name': nameController.text.trim(),
+                        });
                         if (!context.mounted) return;
                         Navigator.pop(context);
                         ScaffoldMessenger.of(context).showSnackBar(
@@ -147,10 +147,9 @@ class SettingsTab extends StatelessWidget {
                   : () async {
                       setDialogState(() => isLoading = true);
                       try {
-                        await ProfileService.instance.updateUserProfile(
-                          uid,
-                          {'phone': phoneController.text.trim()},
-                        );
+                        await ProfileService.instance.updateUserProfile(uid, {
+                          'phone': phoneController.text.trim(),
+                        });
                         if (!context.mounted) return;
                         Navigator.pop(context);
                         ScaffoldMessenger.of(context).showSnackBar(
@@ -368,6 +367,17 @@ class SettingsTab extends StatelessWidget {
       await ProfileService.instance.updateUserProfile(uid, {
         'notificationsEnabled': value,
       });
+
+      if (value) {
+        final groupIds = await ProfileService.instance.getChildGroupIds(uid);
+        await NotificationTopicService.instance.updateSubscriptions(
+          uid: uid,
+          role: 'user',
+          groupIds: groupIds,
+        );
+      } else {
+        await NotificationTopicService.instance.clearSubscriptions();
+      }
     } catch (e) {
       if (!context.mounted) return;
       ScaffoldMessenger.of(
@@ -487,8 +497,9 @@ class SettingsTab extends StatelessWidget {
       builder: (context) => StatefulBuilder(
         builder: (context, setState) => AlertDialog(
           backgroundColor: const Color(0xFF1B191B),
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(22),
+          ),
           title: const Text(
             'Уведомления',
             style: TextStyle(color: Colors.white, fontSize: 18),
@@ -506,15 +517,18 @@ class SettingsTab extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text('Статус',
-                      style: TextStyle(color: Colors.white, fontSize: 16)),
+                  const Text(
+                    'Статус',
+                    style: TextStyle(color: Colors.white, fontSize: 16),
+                  ),
                   Switch(
                     value: isGranted,
                     activeColor: const Color(0xFFA441DC),
                     onChanged: (value) async {
                       if (value) {
-                        PermissionStatus newStatus =
-                            await Permission.notification.request();
+                        PermissionStatus newStatus = await Permission
+                            .notification
+                            .request();
 
                         if (newStatus.isPermanentlyDenied) {
                           openAppSettings();
@@ -543,8 +557,10 @@ class SettingsTab extends StatelessWidget {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Закрыть',
-                  style: TextStyle(color: Colors.white70)),
+              child: const Text(
+                'Закрыть',
+                style: TextStyle(color: Colors.white70),
+              ),
             ),
           ],
         ),
@@ -625,5 +641,3 @@ class SettingsTab extends StatelessWidget {
     );
   }
 }
-
-

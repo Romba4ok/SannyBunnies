@@ -7,16 +7,81 @@ import 'package:sannybunnies/pages/prev_page.dart';
 import 'package:sannybunnies/pages/teacher/dashboard.dart';
 import 'package:sannybunnies/pages/teacher/prev_Page.dart';
 import 'package:sannybunnies/pages/user/dashboard.dart';
+import 'package:sannybunnies/services/notification_topic_service.dart';
+import 'package:sannybunnies/services/user/groups_service.dart';
 import 'package:sannybunnies/services/user/profile_service.dart';
 
-class AuthWrapper extends StatelessWidget {
+class AuthWrapper extends StatefulWidget {
   final bool seenPreview;
 
   const AuthWrapper({Key? key, this.seenPreview = true}) : super(key: key);
 
   @override
+  State<AuthWrapper> createState() => _AuthWrapperState();
+}
+
+class _AuthWrapperState extends State<AuthWrapper> {
+  String? _currentUid;
+  String? _currentRole;
+  bool _isConfiguringTopics = false;
+
+  Future<void> _configureTopics(
+    String uid,
+    String role,
+    bool notificationsEnabled,
+  ) async {
+    if (_isConfiguringTopics) {
+      print('[AuthWrapper] Конфигурация уже запущена, пропускаю');
+      return;
+    }
+
+    if (!notificationsEnabled) {
+      print('[AuthWrapper] Уведомления отключены, очищаю подписки');
+      await _clearSubscriptions();
+      return;
+    }
+
+    if (_currentUid == uid && _currentRole == role) {
+      print('[AuthWrapper] Конфигурация уже выполнена для $uid/$role');
+      return;
+    }
+
+    _currentUid = uid;
+    _currentRole = role;
+    _isConfiguringTopics = true;
+
+    print('[AuthWrapper] Начинаю конфигурацию подписок для $uid (роль: $role)');
+
+    try {
+      final groupIds = role == 'teacher'
+          ? await GroupsService.instance.fetchTeacherGroupIds(uid)
+          : await ProfileService.instance.getChildGroupIds(uid);
+
+      print('[AuthWrapper] Загруженные groupIds: $groupIds');
+
+      await NotificationTopicService.instance.updateSubscriptions(
+        uid: uid,
+        role: role,
+        groupIds: groupIds,
+      );
+
+      print('[AuthWrapper] ✓ Конфигурация подписок завершена');
+    } catch (error) {
+      print('[AuthWrapper] ✗ Ошибка настройки подписок на темы: $error');
+    } finally {
+      _isConfiguringTopics = false;
+    }
+  }
+
+  Future<void> _clearSubscriptions() async {
+    await NotificationTopicService.instance.clearSubscriptions();
+    _currentUid = null;
+    _currentRole = null;
+  }
+
+  @override
   Widget build(BuildContext context) {
-    if (!seenPreview) {
+    if (!widget.seenPreview) {
       return const PrevPage();
     }
 
@@ -29,6 +94,9 @@ class AuthWrapper extends StatelessWidget {
 
         final user = authSnapshot.data;
         if (user == null) {
+          if (_currentUid != null) {
+            _clearSubscriptions();
+          }
           return const AuthChoicePage();
         }
 
@@ -57,6 +125,18 @@ class AuthWrapper extends StatelessWidget {
             }
 
             final role = data['role'] as String?;
+            if (role != null) {
+              final notificationsEnabled =
+                  data['notificationsEnabled'] as bool? ?? true;
+              WidgetsBinding.instance.addPostFrameCallback(
+                (_) => _configureTopics(
+                  user.uid,
+                  role,
+                  notificationsEnabled,
+                ),
+              );
+            }
+
             if (role == 'teacher') {
               return const TeacherPrevPage();
             }

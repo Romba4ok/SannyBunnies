@@ -1,6 +1,7 @@
 ﻿import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:sannybunnies/services/notification_topic_service.dart';
 
 class LoginService {
   LoginService._();
@@ -36,7 +37,14 @@ class LoginService {
             'createdAt': FieldValue.serverTimestamp(),
             'platform': 'email',
             'role': 'user',
+            'notificationsEnabled': true,
           });
+
+          await NotificationTopicService.instance.updateSubscriptions(
+            uid: user.uid,
+            role: 'user',
+            groupIds: [],
+          );
         } catch (e) {
           await user.delete();
           throw 'Не удалось сохранить данные пользователя. Попробуйте ещё раз.';
@@ -68,10 +76,13 @@ class LoginService {
     try {
       await _googleSignIn.signOut();
 
-      final googleUser = await _googleSignIn.signIn().catchError((e) => print("Внутренняя ошибка Google: $e"));
+      final googleUser = await _googleSignIn.signIn().catchError(
+        (e) => print("Внутренняя ошибка Google: $e"),
+      );
       if (googleUser == null) throw 'Вход отменен пользователем';
 
-      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
 
       final OAuthCredential credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
@@ -95,7 +106,9 @@ class LoginService {
       throw 'Пользователь не найден. Перезайдите.';
     }
 
-    final displayName = name.isEmpty ? user.displayName ?? 'Пользователь Google' : name;
+    final displayName = name.isEmpty
+        ? user.displayName ?? 'Пользователь Google'
+        : name;
 
     try {
       await _db.collection('users').doc(user.uid).set({
@@ -106,11 +119,18 @@ class LoginService {
         'createdAt': FieldValue.serverTimestamp(),
         'platform': 'google',
         'role': 'user',
+        'notificationsEnabled': true,
       }, SetOptions(merge: true));
 
       if (displayName.isNotEmpty && user.displayName != displayName) {
         await user.updateDisplayName(displayName);
       }
+
+      await NotificationTopicService.instance.updateSubscriptions(
+        uid: user.uid,
+        role: 'user',
+        groupIds: [],
+      );
     } catch (e) {
       throw 'Не удалось сохранить профиль: $e';
     }
@@ -156,4 +176,3 @@ class LoginService {
     }
   }
 }
-

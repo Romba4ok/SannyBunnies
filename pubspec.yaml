@@ -16,7 +16,7 @@ dependencies:
   path_provider:
   sqflite:
   url_launcher: ^6.1.10
-  # Firebase
+  
   cloud_firestore: ^6.3.0
   firebase_storage: ^13.3.0
   firebase_core: ^4.7.0
@@ -57,7 +57,7 @@ flutter:
     - assets/images/home/
     - assets/images/home_teacher/
 
-  # Подключение шрифта Inter — используем имеющийся variable font в папке assets/fonts/Inter/
+  
   fonts:
     - family: Inter
       fonts:
