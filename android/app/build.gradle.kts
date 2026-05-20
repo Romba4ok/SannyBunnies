@@ -6,13 +6,13 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
-//import java.util.Properties
-//
-//// Загрузка key.properties
-//val keystorePropertiesFile = rootProject.file("key.properties")
-//val keystoreProperties = Properties().apply {
-//    load(keystorePropertiesFile.inputStream())
-//}
+import java.util.Properties
+
+// Загрузка key.properties
+val keystorePropertiesFile = rootProject.file("key.properties")
+val keystoreProperties = Properties().apply {
+    load(keystorePropertiesFile.inputStream())
+}
 
 android {
     namespace = "com.example.sannybunnies"
@@ -38,23 +38,23 @@ android {
     }
 
 
-//    signingConfigs {
-//        create("release") {
-//            keyAlias = keystoreProperties["keyAlias"]?.toString() ?: ""
-//            keyPassword = keystoreProperties["keyPassword"]?.toString() ?: ""
-//            storePassword = keystoreProperties["storePassword"]?.toString() ?: ""
-//            val storeFilePath = keystoreProperties["storeFile"]?.toString()
-//            if (!storeFilePath.isNullOrBlank()) {
-//                storeFile = file(storeFilePath)
-//            }
-//        }
-//    }
+    signingConfigs {
+        create("release") {
+            keyAlias = keystoreProperties["keyAlias"]?.toString() ?: ""
+            keyPassword = keystoreProperties["keyPassword"]?.toString() ?: ""
+            storePassword = keystoreProperties["storePassword"]?.toString() ?: ""
+            val storeFilePath = keystoreProperties["storeFile"]?.toString()
+            if (!storeFilePath.isNullOrBlank()) {
+                storeFile = file(storeFilePath)
+            }
+        }
+    }
 
-//    buildTypes {
-//        release {
-//            signingConfig = signingConfigs.getByName("release")
-//        }
-//    }
+    buildTypes {
+        release {
+            signingConfig = signingConfigs.getByName("release")
+        }
+    }
 }
 
 flutter {
