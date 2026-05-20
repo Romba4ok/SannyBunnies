@@ -4,7 +4,6 @@ import 'package:sannybunnies/pages/authorization/auth_choice_page.dart';
 import 'package:sannybunnies/pages/authorization/google_profile_completion_page.dart';
 import 'package:sannybunnies/pages/load_page.dart';
 import 'package:sannybunnies/pages/prev_page.dart';
-import 'package:sannybunnies/pages/teacher/dashboard.dart';
 import 'package:sannybunnies/pages/teacher/prev_Page.dart';
 import 'package:sannybunnies/pages/user/dashboard.dart';
 import 'package:sannybunnies/services/notification_topic_service.dart';
@@ -25,19 +24,9 @@ class _AuthWrapperState extends State<AuthWrapper> {
   String? _currentRole;
   bool _isConfiguringTopics = false;
 
-  Future<void> _configureTopics(
-    String uid,
-    String role,
-    bool notificationsEnabled,
-  ) async {
+  Future<void> _configureTopics(String uid, String role) async {
     if (_isConfiguringTopics) {
       print('[AuthWrapper] Конфигурация уже запущена, пропускаю');
-      return;
-    }
-
-    if (!notificationsEnabled) {
-      print('[AuthWrapper] Уведомления отключены, очищаю подписки');
-      await _clearSubscriptions();
       return;
     }
 
@@ -126,14 +115,8 @@ class _AuthWrapperState extends State<AuthWrapper> {
 
             final role = data['role'] as String?;
             if (role != null) {
-              final notificationsEnabled =
-                  data['notificationsEnabled'] as bool? ?? true;
               WidgetsBinding.instance.addPostFrameCallback(
-                (_) => _configureTopics(
-                  user.uid,
-                  role,
-                  notificationsEnabled,
-                ),
+                    (_) => _configureTopics(user.uid, role),
               );
             }
 

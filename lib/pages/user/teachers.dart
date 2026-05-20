@@ -96,7 +96,7 @@ class _UserTeachersPageState extends State<UserTeachersPage> {
     final name = teacher['name'] ?? '';
     final position = teacher['position'] ?? '';
     final description = teacher['description'] ?? '';
-    final photoUrl = teacher['photo_url'] ?? '';
+    final photoUrl = teacher['photoUrl'] ?? '';
 
     return Container(
       margin: const EdgeInsets.only(bottom: 24),
