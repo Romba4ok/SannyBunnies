@@ -1,6 +1,9 @@
 ﻿import 'dart:typed_data';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:sannybunnies/services/auth_wrapper.dart';
+import 'package:sannybunnies/services/login_service.dart';
+import 'package:sannybunnies/services/user/dashboard_service.dart';
 import 'package:sannybunnies/services/user/profile_service.dart';
 
 class UserInteriorDetailPage extends StatefulWidget {
@@ -19,6 +22,15 @@ class _UserInteriorDetailPageState extends State<UserInteriorDetailPage> {
   void initState() {
     super.initState();
     _loadProfileData();
+  }
+
+  Future<void> _signOut() async {
+    await LoginService.instance.signOut();
+    if (!context.mounted) return;
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(builder: (_) => const AuthWrapper(seenPreview: true)),
+          (route) => false,
+    );
   }
 
   Future<void> _loadProfileData() async {
@@ -50,66 +62,9 @@ class _UserInteriorDetailPageState extends State<UserInteriorDetailPage> {
 
     return Scaffold(
       backgroundColor: const Color(0xFF131010),
-      appBar: AppBar(
-        backgroundColor: const Color(0xFF131010),
-        elevation: 0,
-        automaticallyImplyLeading: true,
-        iconTheme: const IconThemeData(color: Colors.white),
-        title: Row(
-          children: [
-            Container(
-              width: 40,
-              height: 40,
-              decoration: const BoxDecoration(shape: BoxShape.circle),
-              child: ClipOval(
-                child: photoUrl?.isNotEmpty == true
-                    ? _buildCachedImage(photoUrl!, width: 40, height: 40)
-                    : Container(
-                        color: Colors.grey,
-                        child: const Icon(
-                          Icons.person,
-                          size: 20,
-                          color: Colors.white30,
-                        ),
-                      ),
-              ),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text(
-                    'Родитель',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                  Text(
-                    userName,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.notifications_none, color: Colors.white),
-          ),
-          const SizedBox(width: 8),
-        ],
+      appBar: DashboardAppBarService.buildAppBar(
+        context: context,
+        onLogout: _signOut,
       ),
       body: CustomScrollView(
         slivers: [

@@ -1,17 +1,4 @@
-﻿
-
-
-
-
-
-
-
-
-
-
-
-
-import 'dart:io';
+﻿import 'dart:io';
 
 import 'dart:convert';
 
@@ -23,12 +10,11 @@ import 'package:sqflite/sqflite.dart';
 
 class DatabaseHelper {
   static final DatabaseHelper _instance = DatabaseHelper._internal();
+
   factory DatabaseHelper() => _instance;
+
   DatabaseHelper._internal();
 
-  
-  
-  
   static final Map<String, Future<List<int>?>> _imageFutureCache = {};
 
   static const _dbName = 'app.db';
@@ -41,20 +27,10 @@ class DatabaseHelper {
 
   Database? _db;
 
-  
-
   Future<void> initDatabase() async {
-    await _database; 
+    await _database;
   }
 
-  
-  
-  
-  
-  
-  
-  
-  
   Future<List<int>?> getCachedImage(String url) {
     if (url.isEmpty) return Future.value(null);
     return _imageFutureCache.putIfAbsent(url, () async {
@@ -62,59 +38,56 @@ class DatabaseHelper {
       if (file == null) return null;
       try {
         final bytes = await file.readAsBytes();
-        
-        
+
         if (bytes.isEmpty) {
           print('⚠️ Пустые данные для $url - удаляем из кэше');
           await deleteImage(url);
           return null;
         }
-        
-        
-        
-        
-        
+
         if (!_isValidImageData(bytes)) {
           print('⚠️ Невалидные данные изображения для $url - удаляем из кэше');
           await deleteImage(url);
           return null;
         }
-        
+
         return bytes;
       } catch (e) {
         print('❌ Ошибка чтения кэшированного файла $url: $e');
-        await deleteImage(url); 
+        await deleteImage(url);
         return null;
       }
     });
   }
 
-  
   bool _isValidImageData(List<int> bytes) {
     if (bytes.length < 4) return false;
-    
-    
-    if (bytes[0] == 0x89 && bytes[1] == 0x50 && bytes[2] == 0x4E && bytes[3] == 0x47) {
-      return true; 
+
+    if (bytes[0] == 0x89 &&
+        bytes[1] == 0x50 &&
+        bytes[2] == 0x4E &&
+        bytes[3] == 0x47) {
+      return true;
     }
     if (bytes[0] == 0xFF && bytes[1] == 0xD8 && bytes[2] == 0xFF) {
-      return true; 
+      return true;
     }
     if (bytes[0] == 0x47 && bytes[1] == 0x49 && bytes[2] == 0x46) {
-      return true; 
+      return true;
     }
-    if (bytes[0] == 0x52 && bytes[1] == 0x49 && bytes[2] == 0x46 && bytes[3] == 0x46) {
-      return true; 
+    if (bytes[0] == 0x52 &&
+        bytes[1] == 0x49 &&
+        bytes[2] == 0x46 &&
+        bytes[3] == 0x46) {
+      return true;
     }
-    
+
     return false;
   }
 
-  
   Future<File?> getCachedImageFile(String url) async {
     if (url.isEmpty) return null;
 
-    
     final existingPath = await getImagePath(url);
     if (existingPath != null) {
       final f = File(existingPath);
@@ -126,7 +99,6 @@ class DatabaseHelper {
       }
     }
 
-    
     try {
       print('Скачиваем изображение для $url');
       final imagesDir = await _ensureImagesDir();
@@ -148,17 +120,12 @@ class DatabaseHelper {
       await targetFile.writeAsBytes(res.bodyBytes);
       print('Файл сохранен: ${targetFile.path}');
 
-      
       final db = await _database;
-      await db.insert(
-        _table,
-        {
-          _colUrl: url,
-          _colPath: targetFile.path,
-          _colCreatedAt: DateTime.now().millisecondsSinceEpoch,
-        },
-        conflictAlgorithm: ConflictAlgorithm.replace,
-      );
+      await db.insert(_table, {
+        _colUrl: url,
+        _colPath: targetFile.path,
+        _colCreatedAt: DateTime.now().millisecondsSinceEpoch,
+      }, conflictAlgorithm: ConflictAlgorithm.replace);
       print('Запись в БД добавлена для $url');
       return targetFile;
     } catch (e) {
@@ -188,8 +155,6 @@ class DatabaseHelper {
     }
   }
 
-  
-
   Future<String?> getImagePath(String url) async {
     final db = await _database;
     final rows = await db.query(
@@ -212,7 +177,6 @@ class DatabaseHelper {
   Future<void> cacheImage(String url, {File? file}) async {
     final existingPath = await getImagePath(url);
     if (existingPath != null) {
-
       return;
     }
 
@@ -221,7 +185,9 @@ class DatabaseHelper {
     if (url.isNotEmpty) {
       final parsed = Uri.tryParse(url);
       final base = parsed != null ? p.basename(parsed.path) : '';
-      fileName = base.isNotEmpty ? base : 'img_${DateTime.now().millisecondsSinceEpoch}';
+      fileName = base.isNotEmpty
+          ? base
+          : 'img_${DateTime.now().millisecondsSinceEpoch}';
     } else {
       fileName = 'picked_${DateTime.now().millisecondsSinceEpoch}';
     }
@@ -233,16 +199,12 @@ class DatabaseHelper {
       print('Файл скопирован для $url: ${target.path}');
     } else if (url.isNotEmpty) {
       try {
-
         final res = await http.get(Uri.parse(url));
         if (res.statusCode != 200) {
-
           return;
         }
         await target.writeAsBytes(res.bodyBytes);
-
       } catch (e) {
-
         return;
       }
     } else {
@@ -250,21 +212,20 @@ class DatabaseHelper {
     }
 
     final db = await _database;
-    await db.insert(
-      _table,
-      {
-        _colUrl: url,
-        _colPath: target.path,
-        _colCreatedAt: DateTime.now().millisecondsSinceEpoch,
-      },
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
+    await db.insert(_table, {
+      _colUrl: url,
+      _colPath: target.path,
+      _colCreatedAt: DateTime.now().millisecondsSinceEpoch,
+    }, conflictAlgorithm: ConflictAlgorithm.replace);
     print('Запись в БД добавлена в cacheImage для $url');
   }
 
-  Future<int> clearOldImages({Duration maxAge = const Duration(days: 30)}) async {
+  Future<int> clearOldImages({
+    Duration maxAge = const Duration(days: 30),
+  }) async {
     final db = await _database;
-    final threshold = DateTime.now().millisecondsSinceEpoch - maxAge.inMilliseconds;
+    final threshold =
+        DateTime.now().millisecondsSinceEpoch - maxAge.inMilliseconds;
 
     final rows = await db.query(
       _table,
@@ -286,7 +247,6 @@ class DatabaseHelper {
     return removed;
   }
 
-  
   dynamic _sanitizeForJson(dynamic value) {
     if (value is Map) {
       return value.map((k, v) => MapEntry(k.toString(), _sanitizeForJson(v)));
@@ -295,7 +255,6 @@ class DatabaseHelper {
       return value.map(_sanitizeForJson).toList();
     }
     if (value is Timestamp) {
-      
       return value.toDate().toIso8601String();
     }
     if (value is DateTime) {
@@ -304,7 +263,10 @@ class DatabaseHelper {
     return value;
   }
 
-  Future<void> cacheCollection(String collectionName, List<Map<String, dynamic>> items) async {
+  Future<void> cacheCollection(
+    String collectionName,
+    List<Map<String, dynamic>> items,
+  ) async {
     final db = await _database;
     await db.execute('''
       CREATE TABLE IF NOT EXISTS firestore_cache(
@@ -317,28 +279,30 @@ class DatabaseHelper {
     ''');
 
     await db.transaction((txn) async {
-      await txn.delete('firestore_cache', where: 'collection = ?', whereArgs: [collectionName]);
+      await txn.delete(
+        'firestore_cache',
+        where: 'collection = ?',
+        whereArgs: [collectionName],
+      );
       final now = DateTime.now().millisecondsSinceEpoch;
       for (final item in items) {
         final id = item['id']?.toString() ?? '';
-        
+
         final safe = _sanitizeForJson(item);
         final jsonData = jsonEncode(safe);
-        await txn.insert(
-          'firestore_cache',
-          {
-            'collection': collectionName,
-            'doc_id': id,
-            'data': jsonData,
-            'created_at': now,
-          },
-          conflictAlgorithm: ConflictAlgorithm.replace,
-        );
+        await txn.insert('firestore_cache', {
+          'collection': collectionName,
+          'doc_id': id,
+          'data': jsonData,
+          'created_at': now,
+        }, conflictAlgorithm: ConflictAlgorithm.replace);
       }
     });
   }
 
-  Future<List<Map<String, dynamic>>> getCachedCollection(String collectionName) async {
+  Future<List<Map<String, dynamic>>> getCachedCollection(
+    String collectionName,
+  ) async {
     final db = await _database;
     final rows = await db.query(
       'firestore_cache',
@@ -353,14 +317,15 @@ class DatabaseHelper {
         final data = jsonDecode(row['data'] as String) as Map<String, dynamic>;
         data['id'] = row['doc_id'];
         list.add(data);
-      } catch (e) {
-        
-      }
+      } catch (e) {}
     }
     return list;
   }
 
-  Future<Map<String, dynamic>?> getCachedDocument(String collectionName, String docId) async {
+  Future<Map<String, dynamic>?> getCachedDocument(
+    String collectionName,
+    String docId,
+  ) async {
     if (collectionName.isEmpty || docId.isEmpty) return null;
     final db = await _database;
     final rows = await db.query(
@@ -372,7 +337,8 @@ class DatabaseHelper {
     );
     if (rows.isEmpty) return null;
     try {
-      final data = jsonDecode(rows.first['data'] as String) as Map<String, dynamic>;
+      final data =
+          jsonDecode(rows.first['data'] as String) as Map<String, dynamic>;
       data['id'] = docId;
       return data;
     } catch (_) {
@@ -380,21 +346,21 @@ class DatabaseHelper {
     }
   }
 
-  Future<void> cacheDocument(String collectionName, String docId, Map<String, dynamic> item) async {
+  Future<void> cacheDocument(
+    String collectionName,
+    String docId,
+    Map<String, dynamic> item,
+  ) async {
     if (collectionName.isEmpty || docId.isEmpty || item.isEmpty) return;
     final db = await _database;
     final safe = _sanitizeForJson(item);
     final jsonData = jsonEncode(safe);
-    await db.insert(
-      'firestore_cache',
-      {
-        'collection': collectionName,
-        'doc_id': docId,
-        'data': jsonData,
-        'created_at': DateTime.now().millisecondsSinceEpoch,
-      },
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
+    await db.insert('firestore_cache', {
+      'collection': collectionName,
+      'doc_id': docId,
+      'data': jsonData,
+      'created_at': DateTime.now().millisecondsSinceEpoch,
+    }, conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
   Future<DateTime?> getCacheTimestamp(String collectionName) async {
@@ -412,12 +378,14 @@ class DatabaseHelper {
     return DateTime.fromMillisecondsSinceEpoch(ms);
   }
 
-  
-
   Future<void> clearCollectionCache(String collectionName) async {
     try {
       final db = await _database;
-      await db.delete('firestore_cache', where: 'collection = ?', whereArgs: [collectionName]);
+      await db.delete(
+        'firestore_cache',
+        where: 'collection = ?',
+        whereArgs: [collectionName],
+      );
       print('✅ DatabaseHelper: кеш для "$collectionName" очищен');
     } catch (e) {
       print('⚠️ DatabaseHelper: ошибка при очистке кеша "$collectionName": $e');
@@ -446,7 +414,6 @@ class DatabaseHelper {
     await db.delete(_table);
   }
 
-  
   Future<Database> get _database async {
     if (_db != null) return _db!;
     final dbPath = await getDatabasesPath();
@@ -473,7 +440,6 @@ class DatabaseHelper {
         ''');
       },
       onOpen: (db) async {
-        
         await db.execute('''
           CREATE TABLE IF NOT EXISTS firestore_cache(
             collection TEXT NOT NULL,
@@ -497,14 +463,6 @@ class DatabaseHelper {
     return dir;
   }
 
-  
-
-  
-  
-
-  
-
-
   Future<void> close() async {
     if (_db != null) {
       await _db!.close();
@@ -512,5 +470,3 @@ class DatabaseHelper {
     }
   }
 }
-
-

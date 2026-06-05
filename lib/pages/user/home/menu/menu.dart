@@ -35,7 +35,6 @@ class _MenuPageState extends State<MenuPage> {
   ];
 
   String? _selectedGroupId;
-  bool _didSetInitialGroup = false;
   Map<String, dynamic>? _userData;
 
   @override
@@ -66,9 +65,6 @@ class _MenuPageState extends State<MenuPage> {
 
   @override
   Widget build(BuildContext context) {
-    final photoUrl = _userData?['photoUrl'] as String?;
-    final userName = _userData?['name'] as String? ?? '...';
-
     return Scaffold(
       backgroundColor: const Color(0xFF131010),
       appBar: DashboardAppBarService.buildAppBar(
